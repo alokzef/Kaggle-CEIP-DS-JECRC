@@ -3,240 +3,69 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "dde3e6c8",
+   "id": "2ad5bdf9",
    "metadata": {
-    "_cell_guid": "8f824eba-80da-4c2a-a9f8-fccfc92e2e4a",
-    "_uuid": "f1072051-78b1-41c7-abc3-b8cb29d9f44c",
+    "_cell_guid": "0e19d9f6-cee7-4d6a-b865-b19f3dfb1237",
+    "_uuid": "a57707e5-ae81-439d-b2bf-db14ae3c8826",
     "collapsed": false,
     "execution": {
-     "iopub.execute_input": "2026-04-24T06:21:15.224259Z",
-     "iopub.status.busy": "2026-04-24T06:21:15.223711Z",
-     "iopub.status.idle": "2026-04-24T06:21:22.831103Z",
-     "shell.execute_reply": "2026-04-24T06:21:22.830523Z"
+     "iopub.execute_input": "2026-04-24T07:50:32.158827Z",
+     "iopub.status.busy": "2026-04-24T07:50:32.158479Z",
+     "iopub.status.idle": "2026-04-24T07:50:42.220873Z",
+     "shell.execute_reply": "2026-04-24T07:50:42.220048Z"
     },
     "jupyter": {
      "outputs_hidden": false
     },
     "papermill": {
-     "duration": 7.612074,
-     "end_time": "2026-04-24T06:21:22.832854+00:00",
+     "duration": 10.06844,
+     "end_time": "2026-04-24T07:50:42.223105+00:00",
      "exception": false,
-     "start_time": "2026-04-24T06:21:15.220780+00:00",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Using device: cuda\n"
-     ]
-    }
-   ],
-   "source": [
-    "import pandas as pd\n",
-    "import numpy as np\n",
-    "import torch\n",
-    "import torch.nn as nn\n",
-    "import torch.optim as optim\n",
-    "from torch.utils.data import DataLoader, Dataset\n",
-    "from sklearn.preprocessing import StandardScaler\n",
-    "from sklearn.metrics import f1_score\n",
-    "import warnings\n",
-    "\n",
-    "warnings.filterwarnings('ignore')\n",
-    "device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n",
-    "\n",
-    "print(f\"Using device: {device}\")\n",
-    "train = pd.read_parquet('/kaggle/input/competitions/ceip-ds-jecrc/train.parquet')\n",
-    "test = pd.read_parquet('/kaggle/input/competitions/ceip-ds-jecrc/test.parquet')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 2,
-   "id": "b8694c0c",
-   "metadata": {
-    "_cell_guid": "bebfe9ac-1fcb-429c-b9ec-7d74733f31c2",
-    "_uuid": "0b29c022-4666-4307-abc3-719d569bb927",
-    "collapsed": false,
-    "execution": {
-     "iopub.execute_input": "2026-04-24T06:21:22.837246Z",
-     "iopub.status.busy": "2026-04-24T06:21:22.836800Z",
-     "iopub.status.idle": "2026-04-24T06:21:23.126498Z",
-     "shell.execute_reply": "2026-04-24T06:21:23.125355Z"
-    },
-    "jupyter": {
-     "outputs_hidden": false
-    },
-    "papermill": {
-     "duration": 0.293782,
-     "end_time": "2026-04-24T06:21:23.128347+00:00",
-     "exception": false,
-     "start_time": "2026-04-24T06:21:22.834565+00:00",
+     "start_time": "2026-04-24T07:50:32.154665+00:00",
      "status": "completed"
     },
     "tags": []
    },
    "outputs": [],
    "source": [
-    "#Feature selection\n",
-    "sensors = ['X1', 'X2', 'X3', 'X4', 'X5']\n",
-    "X_raw = train[sensors].values\n",
-    "y_raw = train['target'].astype(int).values\n",
-    "X_test_raw = test[sensors].values\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "from sklearn.preprocessing import StandardScaler\n",
+    "from lightgbm import LGBMClassifier\n",
+    "from sklearn.metrics import classification_report, f1_score\n",
     "\n",
-    "scaler = StandardScaler()\n",
-    "X_scaled = scaler.fit_transform(X_raw)\n",
-    "X_test_scaled = scaler.transform(X_test_raw)\n",
+    "#Suppress warnings for clean output\n",
+    "import warnings\n",
+    "warnings.filterwarnings('ignore')\n",
     "\n",
-    "#Windowing\n",
-    "class SensorDataset(Dataset):\n",
-    "    def __init__(self, X, y=None, window_size=10):\n",
-    "        self.X = X\n",
-    "        self.y = y\n",
-    "        self.window_size = window_size\n",
-    "\n",
-    "    def __len__(self):\n",
-    "        return len(self.X) - self.window_size\n",
-    "\n",
-    "    def __getitem__(self, idx):\n",
-    "        window = self.X[idx : idx + self.window_size]\n",
-    "        window = torch.FloatTensor(window).permute(1, 0)\n",
-    "        \n",
-    "        if self.y is not None:\n",
-    "            label = torch.FloatTensor([self.y[idx + self.window_size]])\n",
-    "            return window, label\n",
-    "        return window"
+    "train= pd.read_parquet('/kaggle/input/competitions/ceip-ds-jecrc/train.parquet')\n",
+    "test= pd.read_parquet('/kaggle/input/competitions/ceip-ds-jecrc/test.parquet')\n",
+    "#Target fix\n",
+    "train['target'] = train['target'].astype(int)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
-   "id": "fd678e4e",
+   "execution_count": 2,
+   "id": "ad784e17",
    "metadata": {
-    "execution": {
-     "iopub.execute_input": "2026-04-24T06:21:23.132223Z",
-     "iopub.status.busy": "2026-04-24T06:21:23.132004Z",
-     "iopub.status.idle": "2026-04-24T06:23:43.390285Z",
-     "shell.execute_reply": "2026-04-24T06:23:43.389643Z"
-    },
-    "papermill": {
-     "duration": 140.262502,
-     "end_time": "2026-04-24T06:23:43.392245+00:00",
-     "exception": false,
-     "start_time": "2026-04-24T06:21:23.129743+00:00",
-     "status": "completed"
-    },
-    "tags": []
-   },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "Training 1D-CNN(This may take a while on CPU, use GPU if possible)...\n",
-      "Epoch 1 | Loss: 0.6144\n",
-      "Epoch 2 | Loss: 0.5306\n",
-      "Epoch 3 | Loss: 0.5203\n",
-      "Generating predictions...\n"
-     ]
-    }
-   ],
-   "source": [
-    "# 1D CNN\n",
-    "class AnomalyCNN(nn.Module):\n",
-    "    def __init__(self, input_channels, window_size):\n",
-    "        super(AnomalyCNN, self).__init__()\n",
-    "        self.conv_block = nn.Sequential(\n",
-    "            nn.Conv1d(input_channels, 32, kernel_size=3, padding=1),\n",
-    "            nn.BatchNorm1d(32),\n",
-    "            nn.ReLU(),\n",
-    "            nn.Conv1d(32, 64, kernel_size=3, padding=1),\n",
-    "            nn.BatchNorm1d(64),\n",
-    "            nn.ReLU(),\n",
-    "            nn.AdaptiveAvgPool1d(1)\n",
-    "        )\n",
-    "        self.fc = nn.Sequential(\n",
-    "            nn.Linear(64, 32),\n",
-    "            nn.ReLU(),\n",
-    "            nn.Dropout(0.2),\n",
-    "            nn.Linear(32, 1)\n",
-    "        )\n",
-    "\n",
-    "    def forward(self, x):\n",
-    "        x = self.conv_block(x)\n",
-    "        x = x.view(x.size(0), -1)\n",
-    "        return self.fc(x)\n",
-    "\n",
-    "#Training\n",
-    "WINDOW_SIZE = 10\n",
-    "train_ds = SensorDataset(X_scaled, y_raw, window_size=WINDOW_SIZE)\n",
-    "train_loader = DataLoader(train_ds, batch_size=1024, shuffle=True)\n",
-    "\n",
-    "model = AnomalyCNN(input_channels=len(sensors), window_size=WINDOW_SIZE).to(device)\n",
-    "\n",
-    "pos_weight = torch.tensor([(len(y_raw) - sum(y_raw)) / sum(y_raw)]).to(device)\n",
-    "criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)\n",
-    "optimizer = optim.Adam(model.parameters(), lr=0.001)\n",
-    "\n",
-    "#Loop\n",
-    "print(\"Training 1D-CNN(This may take a while on CPU, use GPU if possible)...\")\n",
-    "model.train()\n",
-    "for epoch in range(3):\n",
-    "    total_loss = 0\n",
-    "    for batch_x, batch_y in train_loader:\n",
-    "        batch_x, batch_y = batch_x.to(device), batch_y.to(device)\n",
-    "        \n",
-    "        optimizer.zero_grad()\n",
-    "        outputs = model(batch_x)\n",
-    "        loss = criterion(outputs, batch_y)\n",
-    "        loss.backward()\n",
-    "        optimizer.step()\n",
-    "        total_loss += loss.item()\n",
-    "    \n",
-    "    print(f\"Epoch {epoch+1} | Loss: {total_loss/len(train_loader):.4f}\")\n",
-    "\n",
-    "\n",
-    "print(\"Generating predictions...\")\n",
-    "model.eval()\n",
-    "test_ds = SensorDataset(X_test_scaled, window_size=WINDOW_SIZE)\n",
-    "test_loader = DataLoader(test_ds, batch_size=2048, shuffle=False)\n",
-    "\n",
-    "preds = []\n",
-    "with torch.no_grad():\n",
-    "    for batch_x in test_loader:\n",
-    "        batch_x = batch_x.to(device)\n",
-    "        output = torch.sigmoid(model(batch_x))\n",
-    "        preds.extend(output.cpu().numpy())\n",
-    "\n",
-    "final_preds = [0] * WINDOW_SIZE + [1 if p > 0.5 else 0 for p in preds]"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 4,
-   "id": "f41d5cec",
-   "metadata": {
-    "_cell_guid": "be116a07-9a39-4340-a82c-d057c5e99ff6",
-    "_uuid": "11dbefcd-02d1-4a7d-b223-56de5f61451f",
+    "_cell_guid": "4a6d391e-0eec-4d63-9805-53cf23eb9f13",
+    "_uuid": "82b99e17-971e-4872-87ec-104de303b927",
     "collapsed": false,
     "execution": {
-     "iopub.execute_input": "2026-04-24T06:23:43.397416Z",
-     "iopub.status.busy": "2026-04-24T06:23:43.396659Z",
-     "iopub.status.idle": "2026-04-24T06:23:43.573265Z",
-     "shell.execute_reply": "2026-04-24T06:23:43.572330Z"
+     "iopub.execute_input": "2026-04-24T07:50:42.228138Z",
+     "iopub.status.busy": "2026-04-24T07:50:42.227735Z",
+     "iopub.status.idle": "2026-04-24T07:50:44.795955Z",
+     "shell.execute_reply": "2026-04-24T07:50:44.794677Z"
     },
     "jupyter": {
      "outputs_hidden": false
     },
     "papermill": {
-     "duration": 0.180777,
-     "end_time": "2026-04-24T06:23:43.574931+00:00",
+     "duration": 2.573169,
+     "end_time": "2026-04-24T07:50:44.798117+00:00",
      "exception": false,
-     "start_time": "2026-04-24T06:23:43.394154+00:00",
+     "start_time": "2026-04-24T07:50:42.224948+00:00",
      "status": "completed"
     },
     "tags": []
@@ -246,17 +75,165 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
+      "          Date        X1        X2   X3        X4        X5  target  hour  \\\n",
+      "0   2020-12-16  1.518921  5.463154  1.0  2.718282  2.890372       0     0   \n",
+      "205 2020-12-16  1.185305  5.469999  1.0  7.389056  2.890372       0     0   \n",
+      "204 2020-12-16  1.185305  5.469746  1.0  2.718282  2.890372       0     0   \n",
+      "203 2020-12-16  1.185305  5.469241  1.0  2.718282  2.890372       0     0   \n",
+      "202 2020-12-16  1.182937  5.467427  1.0  2.718282  2.890372       0     0   \n",
       "\n",
-      "Total rows: 409856\n",
-      "target\n",
-      "0    297539\n",
-      "1    112317\n",
-      "Name: count, dtype: int64\n"
+      "     day_of_week  is_weekend  ...   X4_roll    X4_var   X4_ewma   X4_diff  \\\n",
+      "0              2           0  ...  3.652437  5.817635  2.718282  0.000000   \n",
+      "205            2           0  ...  3.652437  5.817635  4.275207  4.670774   \n",
+      "204            2           0  ...  3.652437  5.817635  3.756232 -4.670774   \n",
+      "203            2           0  ...  3.652437  5.817635  3.410248  0.000000   \n",
+      "202            2           0  ...  3.652437  5.817635  3.179593  0.000000   \n",
+      "\n",
+      "      X5_roll  X5_var   X5_ewma  X5_diff  X1_X2_ratio  X3_X4_ratio  \n",
+      "0    2.890372     0.0  2.890372      0.0     0.277979     0.367744  \n",
+      "205  2.890372     0.0  2.890372      0.0     0.216652     0.135317  \n",
+      "204  2.890372     0.0  2.890372      0.0     0.216662     0.367744  \n",
+      "203  2.890372     0.0  2.890372      0.0     0.216682     0.367744  \n",
+      "202  2.890372     0.0  2.890372      0.0     0.216321     0.367744  \n",
+      "\n",
+      "[5 rows x 35 columns]\n"
      ]
     }
    ],
    "source": [
+    "#Features Engg.\n",
+    "def create_features(df):\n",
+    "    df = df.copy()\n",
+    "    \n",
+    "    #Date/Time\n",
+    "    df['Date'] = pd.to_datetime(df['Date'])\n",
+    "    df['hour'] = df['Date'].dt.hour\n",
+    "    df['day_of_week'] = df['Date'].dt.dayofweek\n",
+    "    df['is_weekend'] = (df['day_of_week'] >= 5).astype(int)\n",
+    "    \n",
+    "    #Sensor Stats\n",
+    "    sensors = ['X1', 'X2', 'X3', 'X4', 'X5']\n",
+    "    df['s_mean'] = df[sensors].mean(axis=1)\n",
+    "    df['s_std'] = df[sensors].std(axis=1)\n",
+    "    df['s_max'] = df[sensors].max(axis=1)\n",
+    "\n",
+    "    #Windowing\n",
+    "    df = df.sort_values('Date')\n",
+    "    for c in sensors:\n",
+    "        df[f'{c}_roll'] = df[c].rolling(5).mean().bfill()\n",
+    "        df[f'{c}_var'] = df[c].rolling(6).var().bfill()\n",
+    "        df[f'{c}_ewma'] = df[c].ewm(span=5, adjust=False).mean()\n",
+    "        df[f'{c}_diff'] = df[c].diff().fillna(0)\n",
+    "\n",
+    "    df['X1_X2_ratio'] = df['X1'] / (df['X2'] + 0.001)\n",
+    "    df['X3_X4_ratio'] = df['X3'] / (df['X4'] + 0.001)\n",
+    "        \n",
+    "    return df\n",
+    "\n",
+    "train_df= create_features(train)\n",
+    "test_df= create_features(test)\n",
+    "\n",
+    "print(train_df.head())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "00a479c0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-04-24T07:50:44.803562Z",
+     "iopub.status.busy": "2026-04-24T07:50:44.803157Z",
+     "iopub.status.idle": "2026-04-24T07:51:13.041582Z",
+     "shell.execute_reply": "2026-04-24T07:51:13.040496Z"
+    },
+    "papermill": {
+     "duration": 28.24372,
+     "end_time": "2026-04-24T07:51:13.043798+00:00",
+     "exception": false,
+     "start_time": "2026-04-24T07:50:44.800078+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Training LightGBM...\n",
+      "\n",
+      "F1 Score: 0.6223109336881792 at Threshold: 0.97\n"
+     ]
+    }
+   ],
+   "source": [
+    "#Drop junk columns\n",
+    "drops= ['Date', 'target', 'ID', 'Id', 'id']\n",
+    "features= [c for c in train_df.columns if c not in drops]\n",
+    "\n",
+    "X = train_df[features]\n",
+    "y = train_df['target']\n",
+    "\n",
+    "#Chronological split 73/27\n",
+    "split_idx = int(len(X) * 0.73)\n",
+    "X_train, X_val = X.iloc[:split_idx], X.iloc[split_idx:]\n",
+    "y_train, y_val = y.iloc[:split_idx], y.iloc[split_idx:]\n",
+    "\n",
+    "X_train_s = X_train\n",
+    "X_val_s = X_val\n",
+    "X_test_s = test_df[features]\n",
+    "\n",
+    "neg = len(y_train[y_train == 0])\n",
+    "pos = len(y_train[y_train == 1])\n",
+    "ratio = neg / pos\n",
+    "\n",
+    "print(\"Training LightGBM...\")\n",
+    "lgb = LGBMClassifier(n_estimators=250, learning_rate=0.03, max_depth=5, scale_pos_weight=ratio, random_state=27, verbose=-1)\n",
+    "lgb.fit(X_train_s, y_train)\n",
+    "\n",
+    "lgb_val_probs = lgb.predict_proba(X_val_s)[:, 1]\n",
+    "\n",
+    "best_thresh = 0.5\n",
+    "best_f1 = 0\n",
+    "\n",
+    "for thresh in np.arange(0.01, 1.0, 0.01):\n",
+    "    temp_preds = (lgb_val_probs >= thresh).astype(int)\n",
+    "    temp_f1 = f1_score(y_val, temp_preds, zero_division=0)\n",
+    "    if temp_f1 > best_f1:\n",
+    "        best_f1 = temp_f1\n",
+    "        best_thresh = thresh\n",
+    "\n",
+    "print(f\"\\nF1 Score: {best_f1} at Threshold: {best_thresh}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "1d955ef8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-04-24T07:51:13.048865Z",
+     "iopub.status.busy": "2026-04-24T07:51:13.048521Z",
+     "iopub.status.idle": "2026-04-24T07:51:16.165535Z",
+     "shell.execute_reply": "2026-04-24T07:51:16.164372Z"
+    },
+    "papermill": {
+     "duration": 3.122244,
+     "end_time": "2026-04-24T07:51:16.167861+00:00",
+     "exception": false,
+     "start_time": "2026-04-24T07:51:13.045617+00:00",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
     "#Submit Export\n",
+    "lgb_test_probs = lgb.predict_proba(X_test_s)[:, 1]\n",
+    "final_test_preds = (lgb_test_probs >= best_thresh).astype(int)\n",
+    "\n",
+    "#submission dataframe\n",
     "sub = pd.DataFrame()\n",
     "if 'ID' in test.columns:\n",
     "    sub['ID'] = test['ID']\n",
@@ -264,29 +241,29 @@
     "    sub['Id'] = test['Id']\n",
     "else:\n",
     "    sub['Date'] = test['Date'] \n",
+    " \n",
+    "temp_df = test_df.copy()\n",
+    "temp_df['target'] = final_test_preds\n",
+    "temp_df = temp_df.sort_index()\n",
     "\n",
-    "sub = pd.DataFrame({'target': final_preds})\n",
-    "sub.to_parquet('submission.parquet', index=False)\n",
-    "\n",
-    "print(f\"\\nTotal rows: {len(sub)}\")\n",
-    "print(sub['target'].value_counts())"
+    "sub['target'] = temp_df['target'].values\n",
+    "sub.to_parquet('submission.parquet', index=False)"
    ]
   }
  ],
  "metadata": {
   "kaggle": {
-   "accelerator": "nvidiaTeslaT4",
+   "accelerator": "none",
    "dataSources": [
     {
      "databundleVersionId": 16826396,
-     "isSourceIdPinned": false,
      "sourceId": 139246,
      "sourceType": "competition"
     }
    ],
    "dockerImageVersionId": 31328,
-   "isGpuEnabled": true,
-   "isInternetEnabled": true,
+   "isGpuEnabled": false,
+   "isInternetEnabled": false,
    "language": "python",
    "sourceType": "notebook"
   },
@@ -309,14 +286,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 154.061378,
-   "end_time": "2026-04-24T06:23:46.814257+00:00",
+   "duration": 49.394953,
+   "end_time": "2026-04-24T07:51:17.091786+00:00",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2026-04-24T06:21:12.752879+00:00",
+   "start_time": "2026-04-24T07:50:27.696833+00:00",
    "version": "2.7.0"
   }
  },
