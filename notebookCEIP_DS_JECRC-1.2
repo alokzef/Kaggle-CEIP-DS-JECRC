@@ -3,25 +3,25 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "2ad5bdf9",
+   "id": "6cd31ded",
    "metadata": {
     "_cell_guid": "0e19d9f6-cee7-4d6a-b865-b19f3dfb1237",
     "_uuid": "a57707e5-ae81-439d-b2bf-db14ae3c8826",
     "collapsed": false,
     "execution": {
-     "iopub.execute_input": "2026-04-24T07:50:32.158827Z",
-     "iopub.status.busy": "2026-04-24T07:50:32.158479Z",
-     "iopub.status.idle": "2026-04-24T07:50:42.220873Z",
-     "shell.execute_reply": "2026-04-24T07:50:42.220048Z"
+     "iopub.execute_input": "2026-04-24T08:01:33.848697Z",
+     "iopub.status.busy": "2026-04-24T08:01:33.848332Z",
+     "iopub.status.idle": "2026-04-24T08:01:41.071039Z",
+     "shell.execute_reply": "2026-04-24T08:01:41.070129Z"
     },
     "jupyter": {
      "outputs_hidden": false
     },
     "papermill": {
-     "duration": 10.06844,
-     "end_time": "2026-04-24T07:50:42.223105+00:00",
+     "duration": 7.228429,
+     "end_time": "2026-04-24T08:01:41.072908+00:00",
      "exception": false,
-     "start_time": "2026-04-24T07:50:32.154665+00:00",
+     "start_time": "2026-04-24T08:01:33.844479+00:00",
      "status": "completed"
     },
     "tags": []
@@ -47,59 +47,30 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "ad784e17",
+   "id": "e9e62645",
    "metadata": {
     "_cell_guid": "4a6d391e-0eec-4d63-9805-53cf23eb9f13",
     "_uuid": "82b99e17-971e-4872-87ec-104de303b927",
     "collapsed": false,
     "execution": {
-     "iopub.execute_input": "2026-04-24T07:50:42.228138Z",
-     "iopub.status.busy": "2026-04-24T07:50:42.227735Z",
-     "iopub.status.idle": "2026-04-24T07:50:44.795955Z",
-     "shell.execute_reply": "2026-04-24T07:50:44.794677Z"
+     "iopub.execute_input": "2026-04-24T08:01:41.076879Z",
+     "iopub.status.busy": "2026-04-24T08:01:41.076625Z",
+     "iopub.status.idle": "2026-04-24T08:01:42.873184Z",
+     "shell.execute_reply": "2026-04-24T08:01:42.872255Z"
     },
     "jupyter": {
      "outputs_hidden": false
     },
     "papermill": {
-     "duration": 2.573169,
-     "end_time": "2026-04-24T07:50:44.798117+00:00",
+     "duration": 1.800733,
+     "end_time": "2026-04-24T08:01:42.875177+00:00",
      "exception": false,
-     "start_time": "2026-04-24T07:50:42.224948+00:00",
+     "start_time": "2026-04-24T08:01:41.074444+00:00",
      "status": "completed"
     },
     "tags": []
    },
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "          Date        X1        X2   X3        X4        X5  target  hour  \\\n",
-      "0   2020-12-16  1.518921  5.463154  1.0  2.718282  2.890372       0     0   \n",
-      "205 2020-12-16  1.185305  5.469999  1.0  7.389056  2.890372       0     0   \n",
-      "204 2020-12-16  1.185305  5.469746  1.0  2.718282  2.890372       0     0   \n",
-      "203 2020-12-16  1.185305  5.469241  1.0  2.718282  2.890372       0     0   \n",
-      "202 2020-12-16  1.182937  5.467427  1.0  2.718282  2.890372       0     0   \n",
-      "\n",
-      "     day_of_week  is_weekend  ...   X4_roll    X4_var   X4_ewma   X4_diff  \\\n",
-      "0              2           0  ...  3.652437  5.817635  2.718282  0.000000   \n",
-      "205            2           0  ...  3.652437  5.817635  4.275207  4.670774   \n",
-      "204            2           0  ...  3.652437  5.817635  3.756232 -4.670774   \n",
-      "203            2           0  ...  3.652437  5.817635  3.410248  0.000000   \n",
-      "202            2           0  ...  3.652437  5.817635  3.179593  0.000000   \n",
-      "\n",
-      "      X5_roll  X5_var   X5_ewma  X5_diff  X1_X2_ratio  X3_X4_ratio  \n",
-      "0    2.890372     0.0  2.890372      0.0     0.277979     0.367744  \n",
-      "205  2.890372     0.0  2.890372      0.0     0.216652     0.135317  \n",
-      "204  2.890372     0.0  2.890372      0.0     0.216662     0.367744  \n",
-      "203  2.890372     0.0  2.890372      0.0     0.216682     0.367744  \n",
-      "202  2.890372     0.0  2.890372      0.0     0.216321     0.367744  \n",
-      "\n",
-      "[5 rows x 35 columns]\n"
-     ]
-    }
-   ],
+   "outputs": [],
    "source": [
     "#Features Engg.\n",
     "def create_features(df):\n",
@@ -116,6 +87,7 @@
     "    df['s_mean'] = df[sensors].mean(axis=1)\n",
     "    df['s_std'] = df[sensors].std(axis=1)\n",
     "    df['s_max'] = df[sensors].max(axis=1)\n",
+    "    df['s_min'] = df[sensors].max(axis=1)\n",
     "\n",
     "    #Windowing\n",
     "    df = df.sort_values('Date')\n",
@@ -133,25 +105,25 @@
     "train_df= create_features(train)\n",
     "test_df= create_features(test)\n",
     "\n",
-    "print(train_df.head())"
+    "#print(train_df.head())"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "00a479c0",
+   "id": "40a6c929",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-24T07:50:44.803562Z",
-     "iopub.status.busy": "2026-04-24T07:50:44.803157Z",
-     "iopub.status.idle": "2026-04-24T07:51:13.041582Z",
-     "shell.execute_reply": "2026-04-24T07:51:13.040496Z"
+     "iopub.execute_input": "2026-04-24T08:01:42.879349Z",
+     "iopub.status.busy": "2026-04-24T08:01:42.879079Z",
+     "iopub.status.idle": "2026-04-24T08:04:07.687322Z",
+     "shell.execute_reply": "2026-04-24T08:04:07.686353Z"
     },
     "papermill": {
-     "duration": 28.24372,
-     "end_time": "2026-04-24T07:51:13.043798+00:00",
+     "duration": 144.81268,
+     "end_time": "2026-04-24T08:04:07.689358+00:00",
      "exception": false,
-     "start_time": "2026-04-24T07:50:44.800078+00:00",
+     "start_time": "2026-04-24T08:01:42.876678+00:00",
      "status": "completed"
     },
     "tags": []
@@ -162,8 +134,16 @@
      "output_type": "stream",
      "text": [
       "Training LightGBM...\n",
+      "[LightGBM] [Info] Number of positive: 11382, number of negative: 1185397\n",
+      "[LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.112780 seconds.\n",
+      "You can set `force_row_wise=true` to remove the overhead.\n",
+      "And if memory is not enough, you can set `force_col_wise=true`.\n",
+      "[LightGBM] [Info] Total Bins 7186\n",
+      "[LightGBM] [Info] Number of data points in the train set: 1196779, number of used features: 33\n",
+      "[LightGBM] [Info] [binary:BoostFromScore]: pavg=0.009511 -> initscore=-4.645800\n",
+      "[LightGBM] [Info] Start training from score -4.645800\n",
       "\n",
-      "F1 Score: 0.6223109336881792 at Threshold: 0.97\n"
+      "F1 Score: 0.6373579240832082 at Threshold: 0.92\n"
      ]
     }
    ],
@@ -189,7 +169,18 @@
     "ratio = neg / pos\n",
     "\n",
     "print(\"Training LightGBM...\")\n",
-    "lgb = LGBMClassifier(n_estimators=250, learning_rate=0.03, max_depth=5, scale_pos_weight=ratio, random_state=27, verbose=-1)\n",
+    "lgb = LGBMClassifier(\n",
+    "    n_estimators=1200,\n",
+    "    learning_rate=0.01,\n",
+    "    num_leaves=128,\n",
+    "    max_depth=-1,\n",
+    "    subsample=0.8,\n",
+    "    colsample_bytree=0.8,\n",
+    "    reg_alpha=0.5,\n",
+    "    reg_lambda=0.5,\n",
+    "    scale_pos_weight=ratio,\n",
+    "    random_state=27\n",
+    ")\n",
     "lgb.fit(X_train_s, y_train)\n",
     "\n",
     "lgb_val_probs = lgb.predict_proba(X_val_s)[:, 1]\n",
@@ -210,19 +201,19 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "1d955ef8",
+   "id": "8c9d9fa3",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-24T07:51:13.048865Z",
-     "iopub.status.busy": "2026-04-24T07:51:13.048521Z",
-     "iopub.status.idle": "2026-04-24T07:51:16.165535Z",
-     "shell.execute_reply": "2026-04-24T07:51:16.164372Z"
+     "iopub.execute_input": "2026-04-24T08:04:07.693332Z",
+     "iopub.status.busy": "2026-04-24T08:04:07.693062Z",
+     "iopub.status.idle": "2026-04-24T08:04:40.624616Z",
+     "shell.execute_reply": "2026-04-24T08:04:40.623831Z"
     },
     "papermill": {
-     "duration": 3.122244,
-     "end_time": "2026-04-24T07:51:16.167861+00:00",
+     "duration": 32.9358,
+     "end_time": "2026-04-24T08:04:40.626505+00:00",
      "exception": false,
-     "start_time": "2026-04-24T07:51:13.045617+00:00",
+     "start_time": "2026-04-24T08:04:07.690705+00:00",
      "status": "completed"
     },
     "tags": []
@@ -286,14 +277,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 49.394953,
-   "end_time": "2026-04-24T07:51:17.091786+00:00",
+   "duration": 190.647894,
+   "end_time": "2026-04-24T08:04:41.448821+00:00",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2026-04-24T07:50:27.696833+00:00",
+   "start_time": "2026-04-24T08:01:30.800927+00:00",
    "version": "2.7.0"
   }
  },
